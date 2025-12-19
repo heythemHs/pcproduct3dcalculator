@@ -1,0 +1,14 @@
+.pc3d-quote {
+  border: 1px solid #e5e5e5;
+  padding: 16px;
+  margin: 16px 0;
+  background: #fff;
+}
+
+.pc3d-quote__form .form-group {
+  margin-bottom: 12px;
+}
+
+.pc3d-cart-summary table {
+  width: 100%;
+}
