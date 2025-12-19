@@ -299,12 +299,49 @@ class Pcproduct3dcalculator extends Module
             return;
         }
 
+        // Register CSS
         $this->context->controller->registerStylesheet(
             $this->name . '-style',
             'modules/' . $this->name . '/views/css/pcproduct3dcalculator.css',
             ['media' => 'all', 'priority' => 150]
         );
 
+        // Three.js library (from CDN)
+        $this->context->controller->registerJavascript(
+            $this->name . '-threejs',
+            'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+            ['server' => 'remote', 'position' => 'bottom', 'priority' => 140]
+        );
+
+        // Three.js OrbitControls
+        $this->context->controller->registerJavascript(
+            $this->name . '-threejs-controls',
+            'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js',
+            ['server' => 'remote', 'position' => 'bottom', 'priority' => 141]
+        );
+
+        // Three.js STL Loader
+        $this->context->controller->registerJavascript(
+            $this->name . '-threejs-stl',
+            'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js',
+            ['server' => 'remote', 'position' => 'bottom', 'priority' => 142]
+        );
+
+        // Three.js OBJ Loader
+        $this->context->controller->registerJavascript(
+            $this->name . '-threejs-obj',
+            'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js',
+            ['server' => 'remote', 'position' => 'bottom', 'priority' => 143]
+        );
+
+        // 3D Viewer module
+        $this->context->controller->registerJavascript(
+            $this->name . '-viewer',
+            'modules/' . $this->name . '/views/js/pc3d-viewer.js',
+            ['position' => 'bottom', 'priority' => 145]
+        );
+
+        // Main calculator script
         $this->context->controller->registerJavascript(
             $this->name . '-script',
             'modules/' . $this->name . '/views/js/pcproduct3dcalculator.js',
@@ -323,15 +360,16 @@ class Pcproduct3dcalculator extends Module
                 'currency_iso' => $this->context->currency->iso_code,
             ],
             'pc3d_translations' => [
-                'uploading' => $this->l('Uploading...'),
-                'calculating' => $this->l('Calculating...'),
-                'error' => $this->l('Error'),
-                'success' => $this->l('Success'),
-                'file_too_large' => $this->l('File is too large'),
-                'invalid_file' => $this->l('Invalid file type'),
-                'select_material' => $this->l('Please select a material'),
-                'upload_first' => $this->l('Please upload a file first'),
-                'added_to_cart' => $this->l('Added to cart'),
+                'uploading' => $this->trans('Uploading...', [], 'Modules.Pcproduct3dcalculator.Shop'),
+                'calculating' => $this->trans('Calculating...', [], 'Modules.Pcproduct3dcalculator.Shop'),
+                'error' => $this->trans('Error', [], 'Modules.Pcproduct3dcalculator.Shop'),
+                'success' => $this->trans('Success', [], 'Modules.Pcproduct3dcalculator.Shop'),
+                'file_too_large' => $this->trans('File is too large', [], 'Modules.Pcproduct3dcalculator.Shop'),
+                'invalid_file' => $this->trans('Invalid file type', [], 'Modules.Pcproduct3dcalculator.Shop'),
+                'select_material' => $this->trans('Please select a material', [], 'Modules.Pcproduct3dcalculator.Shop'),
+                'upload_first' => $this->trans('Please upload a file first', [], 'Modules.Pcproduct3dcalculator.Shop'),
+                'added_to_cart' => $this->trans('Added to cart', [], 'Modules.Pcproduct3dcalculator.Shop'),
+                'loading_model' => $this->trans('Loading 3D model...', [], 'Modules.Pcproduct3dcalculator.Shop'),
             ],
         ]);
     }

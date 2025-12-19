@@ -18,8 +18,8 @@
   </div>
 
   <div class="row">
-    {* Upload Section *}
-    <div class="col-md-6">
+    {* Left Column - Upload & Options *}
+    <div class="col-lg-5 col-md-6">
       <div class="pc3d-card">
         <h3 class="pc3d-card-title">
           <i class="material-icons">cloud_upload</i>
@@ -82,10 +82,8 @@
           </div>
         </form>
       </div>
-    </div>
 
-    {* Results Section *}
-    <div class="col-md-6">
+      {* Results Card *}
       <div class="pc3d-card pc3d-results" style="display:none;">
         <h3 class="pc3d-card-title">
           <i class="material-icons">assessment</i>
@@ -132,6 +130,69 @@
           {/if}
         </div>
       </div>
+    </div>
+
+    {* Right Column - 3D Viewer *}
+    <div class="col-lg-7 col-md-6">
+      <div class="pc3d-card pc3d-viewer-card">
+        <h3 class="pc3d-card-title">
+          <i class="material-icons">view_in_ar</i>
+          {l s='3D Model Preview' mod='pcproduct3dcalculator'}
+        </h3>
+
+        <div class="pc3d-viewer-wrapper">
+          {* Viewer Container *}
+          <div class="pc3d-viewer-container">
+            <div id="pc3d-viewer"></div>
+
+            {* Placeholder when no model loaded *}
+            <div class="pc3d-viewer-placeholder">
+              <i class="material-icons">view_in_ar</i>
+              <p>{l s='Upload a 3D file to see preview' mod='pcproduct3dcalculator'}</p>
+            </div>
+
+            {* Loading indicator for viewer *}
+            <div class="pc3d-viewer-loading" style="display:none;">
+              <div class="pc3d-loading-spinner"></div>
+              <span>{l s='Loading model...' mod='pcproduct3dcalculator'}</span>
+            </div>
+          </div>
+
+          {* Viewer Controls *}
+          <div class="pc3d-viewer-controls" style="display:none;">
+            <div class="pc3d-viewer-controls-left">
+              <button type="button" class="btn btn-sm btn-outline-secondary pc3d-viewer-rotate active" title="{l s='Auto Rotate' mod='pcproduct3dcalculator'}">
+                <i class="material-icons">360</i>
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-secondary pc3d-viewer-wireframe" title="{l s='Wireframe' mod='pcproduct3dcalculator'}">
+                <i class="material-icons">grid_on</i>
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-secondary pc3d-viewer-reset" title="{l s='Reset View' mod='pcproduct3dcalculator'}">
+                <i class="material-icons">center_focus_strong</i>
+              </button>
+            </div>
+            <div class="pc3d-viewer-controls-right">
+              <label class="pc3d-color-picker">
+                <span>{l s='Color:' mod='pcproduct3dcalculator'}</span>
+                <input type="color" class="pc3d-viewer-color" value="#2fb5d2">
+              </label>
+              <button type="button" class="btn btn-sm btn-outline-secondary pc3d-viewer-fullscreen" title="{l s='Fullscreen' mod='pcproduct3dcalculator'}">
+                <i class="material-icons">fullscreen</i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {* Viewer Instructions *}
+        <div class="pc3d-viewer-instructions">
+          <small>
+            <strong>{l s='Controls:' mod='pcproduct3dcalculator'}</strong>
+            {l s='Left click + drag to rotate' mod='pcproduct3dcalculator'} |
+            {l s='Right click + drag to pan' mod='pcproduct3dcalculator'} |
+            {l s='Scroll to zoom' mod='pcproduct3dcalculator'}
+          </small>
+        </div>
+      </div>
 
       {* Existing Uploads *}
       {if $pc3d_uploads|@count > 0}
@@ -148,7 +209,7 @@
               <span class="pc3d-upload-name">{$upload.original_name|escape:'htmlall':'UTF-8'}</span>
               {if $upload.estimated_price}
               <span class="pc3d-upload-price">
-                {Tools::displayPrice($upload.estimated_price, $pc3d_currency)}
+                {Context::getContext()->getCurrentLocale()->formatPrice($upload.estimated_price, Context::getContext()->currency->iso_code)}
               </span>
               {/if}
             </div>
@@ -177,8 +238,8 @@
       <div class="col-md-4">
         <div class="pc3d-step">
           <div class="pc3d-step-number">2</div>
-          <h5>{l s='Choose Options' mod='pcproduct3dcalculator'}</h5>
-          <p>{l s='Select your material and infill percentage' mod='pcproduct3dcalculator'}</p>
+          <h5>{l s='Preview & Configure' mod='pcproduct3dcalculator'}</h5>
+          <p>{l s='View your model in 3D and select material and infill' mod='pcproduct3dcalculator'}</p>
         </div>
       </div>
       <div class="col-md-4">

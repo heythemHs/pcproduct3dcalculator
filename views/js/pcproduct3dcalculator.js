@@ -15,6 +15,8 @@
 
     // Current state
     PC3D.currentUpload = null;
+    PC3D.currentFile = null;
+    PC3D.viewerInitialized = false;
 
     /**
      * Initialize the calculator
@@ -22,6 +24,150 @@
     PC3D.init = function() {
         this.bindEvents();
         this.initFileDropZone();
+        this.initViewer();
+        this.initViewerControls();
+    };
+
+    /**
+     * Initialize 3D viewer
+     */
+    PC3D.initViewer = function() {
+        var viewerContainer = document.getElementById('pc3d-viewer');
+        if (!viewerContainer) return;
+
+        // Check if Three.js and viewer are available
+        if (typeof THREE === 'undefined' || typeof PC3DViewer === 'undefined') {
+            console.warn('PC3D: 3D viewer libraries not loaded');
+            $('.pc3d-viewer-container').hide();
+            return;
+        }
+
+        // Initialize viewer
+        if (PC3DViewer.init('pc3d-viewer')) {
+            this.viewerInitialized = true;
+            $('.pc3d-viewer-placeholder').hide();
+        } else {
+            $('.pc3d-viewer-container').hide();
+        }
+    };
+
+    /**
+     * Initialize viewer control buttons
+     */
+    PC3D.initViewerControls = function() {
+        var self = this;
+
+        // Auto-rotate toggle
+        $(document).on('click', '.pc3d-viewer-rotate', function() {
+            var $btn = $(this);
+            var isActive = $btn.hasClass('active');
+            $btn.toggleClass('active');
+            if (self.viewerInitialized) {
+                PC3DViewer.setAutoRotate(!isActive);
+            }
+        });
+
+        // Wireframe toggle
+        $(document).on('click', '.pc3d-viewer-wireframe', function() {
+            var $btn = $(this);
+            var isActive = $btn.hasClass('active');
+            $btn.toggleClass('active');
+            if (self.viewerInitialized) {
+                PC3DViewer.setWireframe(!isActive);
+            }
+        });
+
+        // Reset view
+        $(document).on('click', '.pc3d-viewer-reset', function() {
+            if (self.viewerInitialized) {
+                PC3DViewer.resetView();
+            }
+        });
+
+        // Fullscreen toggle
+        $(document).on('click', '.pc3d-viewer-fullscreen', function() {
+            self.toggleFullscreen();
+        });
+
+        // Color picker for model
+        $(document).on('change', '.pc3d-viewer-color', function() {
+            var color = $(this).val();
+            if (self.viewerInitialized && color) {
+                PC3DViewer.setModelColor(parseInt(color.replace('#', ''), 16));
+            }
+        });
+
+        // Material selection changes model color
+        $(document).on('change', '.pc3d-material-select', function() {
+            var $selected = $(this).find(':selected');
+            var color = $selected.data('color');
+            if (self.viewerInitialized && color) {
+                PC3DViewer.setModelColor(parseInt(color.replace('#', ''), 16));
+                $('.pc3d-viewer-color').val(color);
+            }
+        });
+    };
+
+    /**
+     * Toggle fullscreen mode
+     */
+    PC3D.toggleFullscreen = function() {
+        var container = $('.pc3d-viewer-wrapper')[0];
+        if (!container) return;
+
+        if (!document.fullscreenElement) {
+            if (container.requestFullscreen) {
+                container.requestFullscreen();
+            } else if (container.webkitRequestFullscreen) {
+                container.webkitRequestFullscreen();
+            } else if (container.msRequestFullscreen) {
+                container.msRequestFullscreen();
+            }
+            $(container).addClass('pc3d-fullscreen');
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+            $(container).removeClass('pc3d-fullscreen');
+        }
+
+        // Resize viewer after fullscreen change
+        setTimeout(function() {
+            if (PC3DViewer.isInitialized()) {
+                PC3DViewer.onWindowResize();
+            }
+        }, 100);
+    };
+
+    /**
+     * Load file into 3D viewer
+     */
+    PC3D.loadFileIntoViewer = function(file) {
+        if (!this.viewerInitialized) return;
+
+        var self = this;
+        $('.pc3d-viewer-placeholder').hide();
+        $('.pc3d-viewer-loading').show();
+
+        PC3DViewer.loadFromFile(file, function(success, error) {
+            $('.pc3d-viewer-loading').hide();
+
+            if (success) {
+                $('.pc3d-viewer-controls').show();
+                // Apply material color if selected
+                var materialColor = $('.pc3d-material-select option:selected').data('color');
+                if (materialColor) {
+                    PC3DViewer.setModelColor(parseInt(materialColor.replace('#', ''), 16));
+                }
+            } else {
+                self.showError(error || 'Failed to load 3D model preview');
+                $('.pc3d-viewer-placeholder').show();
+            }
+        });
     };
 
     /**
@@ -98,7 +244,9 @@
         });
 
         // Click to browse
-        dropZone.on('click', function() {
+        dropZone.on('click', function(e) {
+            // Prevent click if clicking on file input
+            if ($(e.target).is('.pc3d-file-input')) return;
             $(this).find('.pc3d-file-input').trigger('click');
         });
     };
@@ -116,11 +264,17 @@
             return;
         }
 
+        // Store file reference for viewer
+        this.currentFile = file;
+
         // Update UI
         this.showFileName(file.name);
         this.showLoading(PC3D.translations.uploading || 'Uploading...');
 
-        // Upload file
+        // Load into 3D viewer immediately (parallel with upload)
+        this.loadFileIntoViewer(file);
+
+        // Upload file to server
         this.uploadFile(file);
     };
 
@@ -364,6 +518,7 @@
                     // Clear current upload if it was deleted
                     if (self.currentUpload && self.currentUpload.upload_id == uploadId) {
                         self.currentUpload = null;
+                        self.currentFile = null;
                         self.resetForm();
                     }
                 } else {
@@ -469,6 +624,13 @@
         $('.pc3d-drop-zone-text').show();
         $('.pc3d-results').hide();
         $('.pc3d-add-to-cart').prop('disabled', true);
+
+        // Clear 3D viewer
+        if (this.viewerInitialized) {
+            PC3DViewer.clearModel();
+            $('.pc3d-viewer-placeholder').show();
+            $('.pc3d-viewer-controls').hide();
+        }
     };
 
     // Export to global

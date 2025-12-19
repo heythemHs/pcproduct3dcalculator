@@ -511,11 +511,275 @@
   }
 }
 
+/* =============================================
+   3D VIEWER STYLES
+   ============================================= */
+
+/* Viewer Card */
+.pc3d-viewer-card {
+  min-height: 500px;
+}
+
+/* Viewer Wrapper - contains viewer and controls */
+.pc3d-viewer-wrapper {
+  position: relative;
+  background: var(--pc3d-light);
+  border-radius: var(--pc3d-radius);
+  overflow: hidden;
+}
+
+/* Main Viewer Container */
+.pc3d-viewer-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+}
+
+#pc3d-viewer {
+  width: 100%;
+  height: 100%;
+}
+
+#pc3d-viewer canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Viewer Placeholder */
+.pc3d-viewer-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--pc3d-secondary);
+  pointer-events: none;
+}
+
+.pc3d-viewer-placeholder i.material-icons {
+  font-size: 80px;
+  opacity: 0.3;
+  margin-bottom: 15px;
+}
+
+.pc3d-viewer-placeholder p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Viewer Loading */
+.pc3d-viewer-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 10;
+}
+
+.pc3d-viewer-loading .pc3d-loading-spinner {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 10px;
+}
+
+.pc3d-viewer-loading span {
+  color: var(--pc3d-dark);
+  font-size: 0.9rem;
+}
+
+/* Viewer Controls */
+.pc3d-viewer-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: #fff;
+  border-top: 1px solid var(--pc3d-border);
+}
+
+.pc3d-viewer-controls-left,
+.pc3d-viewer-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pc3d-viewer-controls .btn {
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pc3d-viewer-controls .btn i.material-icons {
+  font-size: 20px;
+}
+
+.pc3d-viewer-controls .btn.active {
+  background: var(--pc3d-primary);
+  border-color: var(--pc3d-primary);
+  color: #fff;
+}
+
+/* Color Picker */
+.pc3d-color-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--pc3d-secondary);
+  margin: 0;
+  cursor: pointer;
+}
+
+.pc3d-color-picker input[type="color"] {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid var(--pc3d-border);
+  border-radius: 4px;
+  cursor: pointer;
+  background: none;
+}
+
+.pc3d-color-picker input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+.pc3d-color-picker input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 2px;
+}
+
+/* Viewer Instructions */
+.pc3d-viewer-instructions {
+  padding: 10px 15px;
+  background: #fff;
+  border-top: 1px solid var(--pc3d-border);
+  text-align: center;
+  color: var(--pc3d-secondary);
+}
+
+.pc3d-viewer-instructions strong {
+  color: var(--pc3d-dark);
+}
+
+/* Fullscreen Mode */
+.pc3d-viewer-wrapper.pc3d-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99999;
+  border-radius: 0;
+  background: #000;
+}
+
+.pc3d-viewer-wrapper.pc3d-fullscreen .pc3d-viewer-container {
+  height: calc(100vh - 100px);
+}
+
+.pc3d-viewer-wrapper.pc3d-fullscreen .pc3d-viewer-controls {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: var(--pc3d-radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.pc3d-viewer-wrapper.pc3d-fullscreen .pc3d-viewer-instructions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+}
+
+.pc3d-viewer-wrapper.pc3d-fullscreen .pc3d-viewer-instructions strong {
+  color: #fff;
+}
+
+/* Fullscreen button icon change */
+.pc3d-fullscreen .pc3d-viewer-fullscreen i.material-icons::before {
+  content: 'fullscreen_exit';
+}
+
+/* Responsive Viewer */
+@media (max-width: 991px) {
+  .pc3d-viewer-container {
+    height: 350px;
+  }
+
+  .pc3d-viewer-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .pc3d-viewer-container {
+    height: 300px;
+  }
+
+  .pc3d-viewer-controls {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .pc3d-viewer-controls-left,
+  .pc3d-viewer-controls-right {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .pc3d-viewer-placeholder i.material-icons {
+    font-size: 60px;
+  }
+
+  .pc3d-color-picker span {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .pc3d-viewer-container {
+    height: 250px;
+  }
+
+  .pc3d-viewer-controls .btn {
+    padding: 4px 8px;
+  }
+
+  .pc3d-viewer-controls .btn i.material-icons {
+    font-size: 18px;
+  }
+
+  .pc3d-viewer-instructions {
+    font-size: 0.75rem;
+  }
+}
+
 /* Print Styles */
 @media print {
   .pc3d-drop-zone,
   .pc3d-actions,
-  .pc3d-delete-upload {
+  .pc3d-delete-upload,
+  .pc3d-viewer-controls,
+  .pc3d-viewer-wrapper {
     display: none !important;
   }
 }
